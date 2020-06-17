@@ -136,7 +136,12 @@ public class IntegrationTest {
     ActorTestKit.shutdown(testKit3.system());
     ActorTestKit.shutdown(testKit4.system());
 
-    CassandraLauncher.stop();
+    try {
+      CassandraLauncher.stop();
+    } catch ( RuntimeException e) {
+      //ignore TerminateProcess will return exit code: 1 on windows.
+    }
+    Thread.sleep(10000); // wait for cassandra to stop
     FileUtils.deleteDirectory(databaseDirectory);
   }
 

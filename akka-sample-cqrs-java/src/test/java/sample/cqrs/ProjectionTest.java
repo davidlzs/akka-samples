@@ -70,7 +70,12 @@ public class ProjectionTest {
         // better to terminate it before Cassandra to avoid error logging.
         testKit.system().terminate();
         testKit.system().getWhenTerminated().toCompletableFuture().get(15, TimeUnit.SECONDS);
-        CassandraLauncher.stop();
+        try {
+            CassandraLauncher.stop();
+        } catch ( RuntimeException e) {
+            //ignore TerminateProcess will return exit code: 1 on windows.
+        }
+        Thread.sleep(10000); // wait for cassandra to stop
         FileUtils.deleteDirectory(databaseDirectory);
     }
 

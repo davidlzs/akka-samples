@@ -20,6 +20,8 @@ This is implemented using [Akka Projections](https://doc.akka.io/docs/akka-proje
 
 ## Running the sample code
 
+0. In `gitbash shell`, NOT powershell
+
 1. Start a Cassandra server by running:
 
 ```
