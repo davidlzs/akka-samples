@@ -44,7 +44,7 @@ public class ShoppingCart
   /**
    * The state for the {@link ShoppingCart} entity.
    */
-  public final class State implements CborSerializable {
+  public final class State implements JsonSerializable {
     private Map<String, Integer> items = new HashMap<>();
     private Optional<Instant> checkoutDate = Optional.empty();
 
@@ -92,7 +92,7 @@ public class ShoppingCart
   /**
    * This interface defines all the commands that the ShoppingCart persistent actor supports.
    */
-  public interface Command extends CborSerializable {
+  public interface Command extends JsonSerializable {
   }
 
   /**
@@ -174,7 +174,7 @@ public class ShoppingCart
   /**
    * Summary of the shopping cart state, used in reply messages.
    */
-  public static final class Summary implements CborSerializable {
+  public static final class Summary implements JsonSerializable {
     public final Map<String, Integer> items;
     public final boolean checkedOut;
 
@@ -186,7 +186,7 @@ public class ShoppingCart
     }
   }
 
-  public interface Confirmation extends CborSerializable {}
+  public interface Confirmation extends JsonSerializable {}
 
   public static class Accepted implements Confirmation {
     public final Summary summary;
@@ -205,7 +205,7 @@ public class ShoppingCart
     }
   }
 
-  public interface Event extends CborSerializable {
+  public interface Event extends JsonSerializable {
   }
 
   public static final class ItemAdded implements Event {
