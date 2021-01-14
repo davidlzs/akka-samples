@@ -313,7 +313,7 @@ public class ShoppingCart
       newCommandHandlerWithReplyBuilder();
 
     b.forState(state -> !state.isCheckedOut())
-      .onCommand(AddItem.class, openShoppingCartCommandHandlers::onAddItem)
+      .onCommand(AddItem.class, (state, cmd) -> openShoppingCartCommandHandlers.onAddItem(state, cmd, context))
       .onCommand(RemoveItem.class, openShoppingCartCommandHandlers::onRemoveItem)
       .onCommand(AdjustItemQuantity.class, openShoppingCartCommandHandlers::onAdjustItemQuantity)
       .onCommand(Checkout.class, openShoppingCartCommandHandlers::onCheckout);
@@ -336,14 +336,16 @@ public class ShoppingCart
 
   private class OpenShoppingCartCommandHandlers {
 
-    public ReplyEffect<Event, State> onAddItem(State state, AddItem cmd) {
+    public ReplyEffect<Event, State> onAddItem(State state, AddItem cmd, ActorContext<Command> context) {
       if (state.hasItem(cmd.itemId)) {
         return Effect().reply(cmd.replyTo, new Rejected(
           "Item '" + cmd.itemId + "' was already added to this shopping cart"));
       } else if (cmd.quantity <= 0) {
         return Effect().reply(cmd.replyTo, new Rejected("Quantity must be greater than zero"));
       } else {
+        context.getLog().info("Before: {}", state.toSummary());
         return Effect().persist(new ItemAdded(cartId, cmd.itemId, cmd.quantity))
+          .thenRun(newState -> context.getLog().info("ThenRun: side-effect: {}", newState.toSummary()))
           .thenReply(cmd.replyTo, updatedCart -> new Accepted(updatedCart.toSummary()));
       }
     }
